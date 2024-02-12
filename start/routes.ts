@@ -53,3 +53,6 @@ import './Routes/AuthRoute'
 
 // User route
 import './Routes/UserRoute'
+
+// League route
+import './Routes/LeagueRoute'

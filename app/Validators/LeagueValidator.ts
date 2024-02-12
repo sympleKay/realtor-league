@@ -1,40 +1,44 @@
-import { schema, CustomMessages } from '@ioc:Adonis/Core/Validator'
+import { schema, CustomMessages, rules } from '@ioc:Adonis/Core/Validator'
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
+import { LEAGUE_ENUM_TYPE } from 'App/Shared/Enums/LeagueEnum'
 
-export default class LeagueValidator {
+export class CreateLeagueValidator {
   constructor(protected ctx: HttpContextContract) {}
 
-  /*
-   * Define schema to validate the "shape", "type", "formatting" and "integrity" of data.
-   *
-   * For example:
-   * 1. The username must be of data type string. But then also, it should
-   *    not contain special characters or numbers.
-   *    ```
-   *     schema.string([ rules.alpha() ])
-   *    ```
-   *
-   * 2. The email must be of data type string, formatted as a valid
-   *    email. But also, not used by any other user.
-   *    ```
-   *     schema.string([
-   *       rules.email(),
-   *       rules.unique({ table: 'users', column: 'email' }),
-   *     ])
-   *    ```
-   */
-  public schema = schema.create({})
+  public schema = schema.create({
+    name: schema.string({ trim: true }),
+    start: schema.date(),
+    duration: schema.number(),
+    size: schema.number(),
+    region: schema.string(),
+    type: schema.enum(Object.values(LEAGUE_ENUM_TYPE)),
+  })
 
-  /**
-   * Custom messages for validation failures. You can make use of dot notation `(.)`
-   * for targeting nested fields and array expressions `(*)` for targeting all
-   * children of an array. For example:
-   *
-   * {
-   *   'profile.username.required': 'Username is required',
-   *   'scores.*.number': 'Define scores as valid numbers'
-   * }
-   *
-   */
+  public messages: CustomMessages = {}
+}
+
+export class UpdateLeagueValidator {
+  constructor(protected ctx: HttpContextContract) {}
+
+  public schema = schema.create({
+    id: schema.string({}, [rules.uuid(), rules.exists({ table: 'leagues', column: 'id' })]),
+    name: schema.string.optional({ trim: true }),
+    start: schema.date.optional(),
+    duration: schema.number.optional(),
+    size: schema.number.optional(),
+    region: schema.string.optional(),
+    type: schema.enum(Object.values(LEAGUE_ENUM_TYPE)),
+  })
+
+  public messages: CustomMessages = {}
+}
+
+export class QueryLeagueByTypeValidator {
+  constructor(protected ctx: HttpContextContract) {}
+
+  public schema = schema.create({
+    type: schema.enum(Object.values(LEAGUE_ENUM_TYPE)),
+  })
+
   public messages: CustomMessages = {}
 }
