@@ -56,3 +56,6 @@ import './Routes/UserRoute'
 
 // League route
 import './Routes/LeagueRoute'
+
+// Team route
+import './Routes/TeammateRoute'
