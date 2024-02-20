@@ -1,13 +1,20 @@
 import NotFoundException from 'App/Exceptions/NotFoundException'
 import League from 'App/Models/League'
 import LeagueRepositoryInterface from 'App/Repositories/Interfaces/LeagueRepositoryInterface'
-import { LeagueType } from 'App/Shared/Enums/LeagueEnum'
+import { LEAGUE_ENUM_TYPE, LeagueType } from 'App/Shared/Enums/LeagueEnum'
 import { CreateLeagueInterface, UpdateLeagueInterface } from 'App/Shared/Interfaces/LeagueInterface'
+import { HelperUtil } from 'App/Utils/HelperUtil'
 import { DateTime } from 'luxon'
+import Hash from '@ioc:Adonis/Core/Hash'
 
 export default class LeagueRepositoryDataModel implements LeagueRepositoryInterface {
   public async create(payload: CreateLeagueInterface): Promise<League> {
     try {
+      if (payload.type === LEAGUE_ENUM_TYPE.PRIVATE) {
+        const code = HelperUtil.generateNumeric(4)
+        const league = await League.create({ ...payload, code: await Hash.make(code) })
+        return { ...league.toJSON(), code } as League
+      }
       return await League.create(payload)
     } catch (error) {
       throw error
