@@ -7,7 +7,7 @@ export class DailyPerformanceCreatorService {
       // Generate random score for each realtor here
       for (const realtor of realtors) {
         realtor.sold = Math.floor(Math.random() * 100)
-        realtor.totalPts = realtor.pts2022 + realtor.pts2023 + realtor.sold
+        realtor.totalPts = realtor.pts_2022 + realtor.pts_2023
         await realtor.save()
       }
     } catch (error) {

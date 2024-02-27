@@ -19,7 +19,7 @@ export default class BadRequestException extends Exception {
     if (Env.get('NODE_ENV') === 'development') {
       console.log(error)
     }
-    ctx.response.status(error.status || 400).json({
+    ctx.response.status(400).json({
       status: false,
       message: error.message || 'Bad request!!!',
       data: Env.get('NODE_ENV') === 'development' ? error.stack : null,

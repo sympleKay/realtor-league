@@ -59,3 +59,6 @@ import './Routes/LeagueRoute'
 
 // Team route
 import './Routes/TeammateRoute'
+
+// Realtor route
+import './Routes/RealtorRoute'

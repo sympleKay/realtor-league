@@ -34,11 +34,12 @@ export default class TeammateRespositoryDataModel implements TeammateRepositoryI
 
       const teammates = payload.realtorIds.map((realtorId) => ({
         teamId: team.id,
-        teammateId: realtorId,
+        realtorId,
+        userId: payload.userId,
       }))
       for (const teammate of teammates) {
         await Teammate.firstOrCreate(
-          { teamId: teammate.teamId, teammateId: teammate.teammateId },
+          { teamId: teammate.teamId, realtorId: teammate.realtorId, userId: teammate.userId },
           {}
         )
       }
@@ -69,27 +70,30 @@ export default class TeammateRespositoryDataModel implements TeammateRepositoryI
     payload: AddRemoveTeammateFromTeamInterface
   ): Promise<Teammate> {
     try {
+      const team = await Team.query().where('id', payload.id).first()
+      if (!team) throw new NotFoundException('Team record does not exist')
       if (payload.action === TEAMMATE_ACTION_ENUM.ADD) {
-        const team = await Team.query().where('id', payload.id).first()
-        if (!team) throw new NotFoundException('Team record does not exist')
         const teammate = await Teammate.query()
-          .where('teammate_id', payload.teammateId)
+          .where('realtor_id', payload.realtorId)
           .andWhere('team_id', team.id)
+          .andWhere('user_id', team.userId)
           .first()
         if (teammate) throw new BadRequestException('Teammate already exists')
         const addTeammate = await Teammate.create({
-          teammateId: payload.teammateId,
+          realtorId: payload.realtorId,
           teamId: team.id,
+          userId: team.userId,
         })
         return addTeammate
       }
 
       if (payload.action === TEAMMATE_ACTION_ENUM.REMOVE) {
         const teammate = await Teammate.query()
-          .where('teammate_id', payload.teammateId)
+          .where('realtor_id', payload.realtorId)
           .andWhere('team_id', payload.id)
+          .andWhere('user_id', team.userId)
           .first()
-        if (!teammate) throw new NotFoundException('Invalid teammate record')
+        if (!teammate) throw new NotFoundException('Realtor does not exist in this team')
         if (teammate.status === TEAMMATE_STATUS_ENUM.INACTIVE)
           throw new BadRequestException('Teammate removed')
         teammate.status = TEAMMATE_STATUS_ENUM.INACTIVE
@@ -104,10 +108,11 @@ export default class TeammateRespositoryDataModel implements TeammateRepositoryI
     }
   }
 
-  public async getMyTeammates(userId: string): Promise<Team[]> {
+  public async getMyTeammates(userId: string): Promise<Team> {
     try {
-      const teams = await Team.query().where('user_id', userId).preload('teammates')
-      return teams
+      const team = await Team.query().where('user_id', userId).preload('teammates').first()
+      if (!team) throw new NotFoundException('No team record found for user')
+      return team
     } catch (error) {
       throw error
     }

@@ -18,7 +18,7 @@ export default class ServerException extends Exception {
     if (Env.get('NODE_ENV') === 'development') {
       console.log(error)
     }
-    ctx.response.status(error.status || 500).json({
+    ctx.response.status(500).json({
       status: false,
       message: error.message || 'Server error',
       data: Env.get('NODE_ENV') === 'development' ? error.stack : null,

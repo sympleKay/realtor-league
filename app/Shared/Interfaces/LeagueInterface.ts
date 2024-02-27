@@ -22,3 +22,8 @@ export interface UpdateLeagueInterface {
   region?: string
   type?: LeagueType
 }
+
+export interface JoinLeagueInterface {
+  teamId: string
+  leagueId: string
+}

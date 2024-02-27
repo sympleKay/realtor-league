@@ -2,29 +2,17 @@ import Team from 'App/Models/Team'
 import Teammate from 'App/Models/Teammate'
 import TeammateRespositoryDataModel from 'App/Repositories/DataModels/TeammateRespositoryDataModel'
 import TeammateRepositoryInterface from 'App/Repositories/Interfaces/TeammateRepositoryInterface'
+import { TEAMMATE_ACTION_ENUM } from 'App/Shared/Enums/TeammateEnum'
 import { TServiceResponse } from 'App/Shared/Interfaces/ServiceResponseInterface'
 import {
   AddRemoveTeammateFromTeamInterface,
   AddTeammateInterface,
-  RealtorInterface,
   UpdateTeamInterface,
 } from 'App/Shared/Interfaces/TeammateInterface'
 
 export class TeammateService {
   private static teammateRepository: TeammateRepositoryInterface =
     new TeammateRespositoryDataModel()
-  public static async getRealtors(): Promise<TServiceResponse<RealtorInterface[]>> {
-    try {
-      const realtors = await this.teammateRepository.getAllRealtors()
-      return {
-        status: true,
-        message: 'Realtors retrieved',
-        data: realtors,
-      }
-    } catch (error) {
-      throw error
-    }
-  }
 
   public static async createTeammate(
     payload: AddTeammateInterface
@@ -61,7 +49,10 @@ export class TeammateService {
       const action = await this.teammateRepository.addRemoveTeammateFromTeam(payload)
       return {
         status: true,
-        message: 'Action taken',
+        message:
+          payload.action === TEAMMATE_ACTION_ENUM.ADD
+            ? 'Realtor added to team'
+            : 'Realtor removed from team',
         data: action,
       }
     } catch (error) {
@@ -69,7 +60,7 @@ export class TeammateService {
     }
   }
 
-  public static async getMyTeammated(userId: string): Promise<TServiceResponse<Team[]>> {
+  public static async getMyTeammates(userId: string): Promise<TServiceResponse<Team>> {
     try {
       const teammates = await this.teammateRepository.getMyTeammates(userId)
       return {

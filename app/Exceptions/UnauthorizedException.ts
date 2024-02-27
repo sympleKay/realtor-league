@@ -19,7 +19,7 @@ export default class UnauthorizedException extends Exception {
     if (Env.get('NODE_ENV') === 'development') {
       console.log(error)
     }
-    ctx.response.status(error.status || 401).json({
+    ctx.response.status(401).json({
       status: false,
       message: error.message || 'User is not authorized to perform this action',
       data: Env.get('NODE_ENV') === 'development' ? error.stack : null,

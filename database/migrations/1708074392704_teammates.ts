@@ -8,7 +8,8 @@ export default class extends BaseSchema {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
       table.uuid('team_id').notNullable()
-      table.integer('teammate_id').notNullable()
+      table.uuid('realtor_id').references('realtors.id').notNullable()
+      table.uuid('user_id').references('users.id').notNullable()
       table.string('status').defaultTo(TEAMMATE_STATUS_ENUM.ACTIVE)
 
       /**

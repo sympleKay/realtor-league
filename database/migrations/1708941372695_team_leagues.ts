@@ -1,21 +1,13 @@
 import BaseSchema from '@ioc:Adonis/Lucid/Schema'
 
 export default class extends BaseSchema {
-  protected tableName = 'leagues'
+  protected tableName = 'team_leagues'
 
   public async up() {
     this.schema.createTable(this.tableName, (table) => {
       table.uuid('id').primary()
-      table.string('name').notNullable()
-      table.uuid('created_by').references('users.id').notNullable()
-      table.date('start').notNullable()
-      table.integer('duration').notNullable()
-      table.date('end').notNullable()
-      table.integer('size').notNullable()
-      table.string('region').notNullable()
-      table.string('type').notNullable()
-      table.string('code')
-      table.uuid('winner').references('teams.id').defaultTo(null)
+      table.uuid('league_id').references('leagues.id').notNullable()
+      table.uuid('team_id').references('teams.id').notNullable()
 
       /**
        * Uses timestamptz for PostgreSQL and DATETIME2 for MSSQL

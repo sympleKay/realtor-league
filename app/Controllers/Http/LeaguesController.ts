@@ -5,6 +5,7 @@ import { LeagueService } from 'App/Service/LeagueService'
 import { HttpResponse } from 'App/Utils/ResponseUtil'
 import {
   CreateLeagueValidator,
+  JoinLeagueValidator,
   QueryLeagueByTypeValidator,
   UpdateLeagueValidator,
 } from 'App/Validators/LeagueValidator'
@@ -59,6 +60,23 @@ export default class LeaguesController {
     }
   }
 
+  public async show({ request, response, auth }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const { id } = request.params()
+      if (!id) throw new BadRequestException('Id not provided')
+      const resp = await LeagueService.get(id)
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
   public async index({ response, auth }: HttpContextContract) {
     try {
       if (!auth.user) throw new ForbiddenException('You can not perform this action')
@@ -94,6 +112,28 @@ export default class LeaguesController {
     try {
       if (!auth.user) throw new ForbiddenException('You can not perform this action')
       const resp = await LeagueService.getMyLeagues(auth.user.id)
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async joinLeague({ request, response, auth }: HttpContextContract) {
+    const payload = await request.validate(JoinLeagueValidator)
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const { id } = request.params()
+      if (!id) throw new BadRequestException('Id not provided')
+      const resp = await LeagueService.joinLeague({
+        code: payload.code,
+        leagueId: id,
+        userId: auth.user.id,
+      })
       return HttpResponse({
         response,
         code: 200,

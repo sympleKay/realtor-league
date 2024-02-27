@@ -19,7 +19,7 @@ export default class NotFoundException extends Exception {
     if (Env.get('NODE_ENV') === 'development') {
       console.log(error)
     }
-    ctx.response.status(error.status || 404).json({
+    ctx.response.status(404).json({
       status: false,
       message: error.message || 'Record does not exisit!!!',
       data: Env.get('NODE_ENV') === 'development' ? error.stack : null,

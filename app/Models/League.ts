@@ -1,17 +1,20 @@
 import { DateTime } from 'luxon'
 import {
-  BaseModel,
+  HasMany,
   beforeCreate,
   beforeFetch,
   beforeFind,
   beforeSave,
   column,
+  hasMany,
 } from '@ioc:Adonis/Lucid/Orm'
 import { softDeleteQuery, softDelete } from 'App/Actions/SoftDeleteAction'
 import { v4 } from 'uuid'
 import { LeagueType } from 'App/Shared/Enums/LeagueEnum'
+import AppBaseModel from 'App/Models/AppBaseModel'
+import TeamLeague from 'App/Models/TeamLeague'
 
-export default class League extends BaseModel {
+export default class League extends AppBaseModel {
   @column({ isPrimary: true })
   public id: string
 
@@ -39,8 +42,11 @@ export default class League extends BaseModel {
   @column()
   public type: LeagueType
 
-  @column()
+  @column({ serializeAs: null })
   public code: string
+
+  @hasMany(() => TeamLeague)
+  public teams: HasMany<typeof TeamLeague>
 
   @beforeSave()
   public static async calculateEndDate(league: League) {

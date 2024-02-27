@@ -1,39 +1,33 @@
 import { DateTime } from 'luxon'
-import { beforeCreate, beforeFetch, beforeFind, column } from '@ioc:Adonis/Lucid/Orm'
+import {
+  BelongsTo,
+  beforeCreate,
+  beforeFetch,
+  beforeFind,
+  belongsTo,
+  column,
+} from '@ioc:Adonis/Lucid/Orm'
+import AppBaseModel from 'App/Models/AppBaseModel'
 import { softDeleteQuery, softDelete } from 'App/Actions/SoftDeleteAction'
 import { v4 } from 'uuid'
-import AppBaseModel from './AppBaseModel'
+import Team from 'App/Models/Team'
+import League from 'App/Models/League'
 
-export default class Realtor extends AppBaseModel {
+export default class TeamLeague extends AppBaseModel {
   @column({ isPrimary: true })
   public id: string
 
   @column()
-  public name: string
+  public leagueId: string
 
   @column()
-  public price: number
+  public teamId: string
 
-  @column()
-  public pts_2022: number
+  @belongsTo(() => Team)
+  public team: BelongsTo<typeof Team>
 
-  @column()
-  public pts_2023: number
-
-  @column()
-  public totalPts: number
-
-  @column()
-  public brokerage: string
-
-  @column()
-  public sold: number
-
-  @column()
-  public image: string
-
-  @column()
-  public listed: number
+  @belongsTo(() => League)
+  public league: BelongsTo<typeof League>
 
   @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime
@@ -45,8 +39,8 @@ export default class Realtor extends AppBaseModel {
   public deletedAt: DateTime
 
   @beforeCreate()
-  public static async assignUuid(realtor: Realtor) {
-    realtor.id = v4()
+  public static async assignUuid(teamLeague: TeamLeague) {
+    teamLeague.id = v4()
   }
 
   @beforeFind()

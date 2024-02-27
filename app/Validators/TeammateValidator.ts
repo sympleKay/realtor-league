@@ -8,7 +8,11 @@ export class CreateTeammateValidator {
   public schema = schema.create({
     name: schema.string(),
     avatar: schema.string.optional(),
-    realtorIds: schema.array().members(schema.number()),
+    realtorIds: schema
+      .array()
+      .members(
+        schema.string({}, [rules.uuid(), rules.exists({ table: 'realtors', column: 'id' })])
+      ),
   })
 
   public messages: CustomMessages = {}
@@ -31,7 +35,7 @@ export class AddRemoveTeammateFromTeamValidator {
 
   public schema = schema.create({
     id: schema.string({}, [rules.uuid(), rules.exists({ table: 'teams', column: 'id' })]),
-    teammateId: schema.number(),
+    realtorId: schema.string({}, [rules.uuid(), rules.exists({ table: 'realtors', column: 'id' })]),
     action: schema.enum(Object.values(TEAMMATE_ACTION_ENUM)),
   })
 

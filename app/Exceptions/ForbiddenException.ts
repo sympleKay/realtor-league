@@ -18,7 +18,7 @@ export default class ForbiddenException extends Exception {
     if (Env.get('NODE_ENV') === 'development') {
       console.log(error)
     }
-    ctx.response.status(error.status || 403).json({
+    ctx.response.status(403).json({
       status: false,
       message: error.message || 'Forbidden request!!!',
       data: Env.get('NODE_ENV') === 'development' ? error.stack : null,

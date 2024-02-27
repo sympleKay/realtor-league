@@ -42,3 +42,13 @@ export class QueryLeagueByTypeValidator {
 
   public messages: CustomMessages = {}
 }
+
+export class JoinLeagueValidator {
+  constructor(protected ctx: HttpContextContract) {}
+
+  public schema = schema.create({
+    code: schema.string.optional({}),
+  })
+
+  public messages: CustomMessages = {}
+}

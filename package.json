@@ -71,6 +71,7 @@
     "luxon": "^3.4.4",
     "mysql2": "^3.9.1",
     "node-cron": "^3.0.3",
+    "phc-argon2": "^1.1.4",
     "proxy-addr": "^2.0.7",
     "reflect-metadata": "^0.2.1",
     "source-map-support": "^0.5.21",

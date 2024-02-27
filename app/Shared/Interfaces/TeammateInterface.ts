@@ -16,7 +16,7 @@ export interface RealtorInterface {
 export interface AddTeammateInterface {
   name: string
   avatar?: string
-  realtorIds: Array<number>
+  realtorIds: Array<string>
   userId: string
 }
 
@@ -29,6 +29,7 @@ export interface UpdateTeamInterface {
 
 export interface AddRemoveTeammateFromTeamInterface {
   id: string
-  teammateId: number
+  realtorId: string
+  userId: string
   action: TeammateActionType
 }
