@@ -12,6 +12,7 @@ import { DateTime } from 'luxon'
 import Hash from '@ioc:Adonis/Core/Hash'
 import BadRequestException from 'App/Exceptions/BadRequestException'
 import TeamLeague from 'App/Models/TeamLeague'
+import ForbiddenException from 'App/Exceptions/ForbiddenException'
 
 export default class LeagueRepositoryDataModel implements LeagueRepositoryInterface {
   public async create(payload: CreateLeagueInterface): Promise<League> {
@@ -21,8 +22,19 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
         throw new BadRequestException('Start date can not be in past')
       }
       if (payload.type === LEAGUE_ENUM_TYPE.PRIVATE) {
-        const code = HelperUtil.generateNumeric(4)
-        const league = await League.create({ ...payload, code: await Hash.make(code) })
+        let code = HelperUtil.generateNumeric(4)
+        let league: League
+        let uniqueCodeFound = false
+
+        while (!uniqueCodeFound) {
+          if (!(await League.findBy('code', code))) {
+            uniqueCodeFound = true
+          } else {
+            code = HelperUtil.generateNumeric(4)
+          }
+        }
+
+        league = await League.create({ ...payload, code })
         return { ...league.toJSON(), code } as League
       }
       return await League.create(payload)
@@ -111,6 +123,30 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
       const teamLeague = await TeamLeague.create({
         teamId: payload.teamId,
         leagueId: payload.leagueId,
+      })
+      return teamLeague
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async joinPrivateLeague(code: string, teamId: string): Promise<TeamLeague> {
+    try {
+      const league = await League.query().where('code', code).first()
+      if (!league) throw new NotFoundException('Invalid league code provided')
+      const teamLeagues = await TeamLeague.query().where('league_id', league.id)
+      if (teamLeagues.length >= league.size)
+        throw new ForbiddenException(
+          'You can not join again. This leagues has already reached his maximun size, join another league'
+        )
+      const existingLeague = await TeamLeague.query()
+        .where('team_id', teamId)
+        .andWhere('league_id', league.id)
+        .first()
+      if (existingLeague) throw new BadRequestException('You already joined this league')
+      const teamLeague = await TeamLeague.create({
+        teamId: teamId,
+        leagueId: league.id,
       })
       return teamLeague
     } catch (error) {

@@ -8,6 +8,7 @@ Route.group(() => {
       Route.patch('/update', 'TeammatesController.update')
       Route.patch('/teammate-action', 'TeammatesController.addRemoveTeam')
       Route.get('/realtors', 'TeammatesController.getRealtors')
+      Route.get('/top-teams', 'TeammatesController.topTeams')
     }).prefix('/team')
   }).prefix('/v1')
 })

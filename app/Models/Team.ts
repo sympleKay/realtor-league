@@ -1,9 +1,11 @@
 import { DateTime } from 'luxon'
 import {
+  BelongsTo,
   HasMany,
   beforeCreate,
   beforeFetch,
   beforeFind,
+  belongsTo,
   column,
   hasMany,
 } from '@ioc:Adonis/Lucid/Orm'
@@ -11,6 +13,7 @@ import AppBaseModel from './AppBaseModel'
 import { softDeleteQuery, softDelete } from 'App/Actions/SoftDeleteAction'
 import { v4 } from 'uuid'
 import Teammate from './Teammate'
+import User from './User'
 
 export default class Team extends AppBaseModel {
   @column({ isPrimary: true })
@@ -28,7 +31,10 @@ export default class Team extends AppBaseModel {
   @hasMany(() => Teammate)
   public teammates: HasMany<typeof Teammate>
 
-  @column.dateTime({ autoCreate: true, serializeAs: null })
+  @belongsTo(() => User)
+  public user: BelongsTo<typeof User>
+
+  @column.dateTime({ autoCreate: true })
   public createdAt: DateTime
 
   @column.dateTime({ autoCreate: true, autoUpdate: true, serializeAs: null })

@@ -6,6 +6,8 @@ import LeagueRepositoryDataModel from 'App/Repositories/DataModels/LeagueReposit
 import TeammateRespositoryDataModel from 'App/Repositories/DataModels/TeammateRespositoryDataModel'
 import LeagueRepositoryInterface from 'App/Repositories/Interfaces/LeagueRepositoryInterface'
 import TeammateRepositoryInterface from 'App/Repositories/Interfaces/TeammateRepositoryInterface'
+import UtilityRepositoryDataModel from 'App/Repositories/DataModels/UtilityRepositoryDataModel'
+import UtilityRepositoryInterface from 'App/Repositories/Interfaces/UtilityRepositoryInterface'
 import { LEAGUE_ENUM_TYPE, LeagueType } from 'App/Shared/Enums/LeagueEnum'
 import { CreateLeagueInterface, UpdateLeagueInterface } from 'App/Shared/Interfaces/LeagueInterface'
 import { TServiceResponse } from 'App/Shared/Interfaces/ServiceResponseInterface'
@@ -14,6 +16,7 @@ export class LeagueService {
   private static LeagueRepository: LeagueRepositoryInterface = new LeagueRepositoryDataModel()
   private static teammateRepository: TeammateRepositoryInterface =
     new TeammateRespositoryDataModel()
+  private static utilityRepository: UtilityRepositoryInterface = new UtilityRepositoryDataModel()
 
   public static async create(payload: CreateLeagueInterface): Promise<TServiceResponse<League>> {
     try {
@@ -137,6 +140,90 @@ export class LeagueService {
         status: true,
         message: 'You have successfully joined the league',
         data: null,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async joinPrivateLeague({
+    userId,
+    code,
+  }: {
+    userId: string
+    code: string
+  }): Promise<TServiceResponse<null>> {
+    try {
+      const team = await this.teammateRepository.getMyTeammates(userId)
+
+      await this.LeagueRepository.joinPrivateLeague(code, team.id)
+      return {
+        status: true,
+        message: 'You have successfully joined the league',
+        data: null,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async getTopLeagues() {
+    try {
+      const query = await this.utilityRepository.topLeagues()
+      const topLeagues = query.map((data) => ({
+        id: data.id,
+        name: data.league.name,
+        commissioner: data.league.creator.fullName,
+        teams: data.league.teams.length,
+        start: data.league.start,
+        end: data.league.end,
+      }))
+
+      return {
+        status: true,
+        message: 'Top leagues',
+        data: topLeagues,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async getTeamRank(leagueId: string, teamId: string) {
+    try {
+      const query = await this.utilityRepository.getTeamLeagueRank(leagueId, teamId)
+      return {
+        status: true,
+        message: 'Team rank',
+        data: {
+          rank: query,
+        },
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async getLeagueHistory() {
+    try {
+      const query = await this.utilityRepository.getLeagueHistory()
+      return {
+        status: true,
+        message: 'League History',
+        data: query,
+      }
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public static async getLeagueTable(leagueId: string) {
+    try {
+      const query = await this.utilityRepository.getTeamLeagues(leagueId)
+      return {
+        status: true,
+        message: 'League Table',
+        data: query,
       }
     } catch (error) {
       throw error

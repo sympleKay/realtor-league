@@ -87,6 +87,7 @@ export class AuthService {
           email: user.email,
           name: `${user.firstName} ${user.lastName}`,
           type: user.type,
+          balance: user.balance,
         },
       }
     } catch (error) {

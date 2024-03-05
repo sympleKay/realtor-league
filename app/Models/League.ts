@@ -1,10 +1,12 @@
 import { DateTime } from 'luxon'
 import {
+  BelongsTo,
   HasMany,
   beforeCreate,
   beforeFetch,
   beforeFind,
   beforeSave,
+  belongsTo,
   column,
   hasMany,
 } from '@ioc:Adonis/Lucid/Orm'
@@ -13,6 +15,8 @@ import { v4 } from 'uuid'
 import { LeagueType } from 'App/Shared/Enums/LeagueEnum'
 import AppBaseModel from 'App/Models/AppBaseModel'
 import TeamLeague from 'App/Models/TeamLeague'
+import User from 'App/Models/User'
+import Team from './Team'
 
 export default class League extends AppBaseModel {
   @column({ isPrimary: true })
@@ -36,17 +40,29 @@ export default class League extends AppBaseModel {
   @column()
   public size: number
 
+  @column({ serialize: (value: any) => !!value })
+  public isActive: boolean
+
   @column()
   public region: string
 
   @column()
   public type: LeagueType
 
-  @column({ serializeAs: null })
+  @column()
   public code: string
+
+  @column()
+  public winner: string
 
   @hasMany(() => TeamLeague)
   public teams: HasMany<typeof TeamLeague>
+
+  @belongsTo(() => User, { foreignKey: 'createdBy' })
+  public creator: BelongsTo<typeof User>
+
+  @belongsTo(() => Team, { foreignKey: 'winner' })
+  public leagueWinner: BelongsTo<typeof Team>
 
   @beforeSave()
   public static async calculateEndDate(league: League) {

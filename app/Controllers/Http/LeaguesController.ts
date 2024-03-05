@@ -65,7 +65,7 @@ export default class LeaguesController {
       if (!auth.user) throw new ForbiddenException('You can not perform this action')
       const { id } = request.params()
       if (!id) throw new BadRequestException('Id not provided')
-      const resp = await LeagueService.get(id)
+      const resp = await LeagueService.getLeagueTable(id)
       return HttpResponse({
         response,
         code: 200,
@@ -134,6 +134,91 @@ export default class LeaguesController {
         leagueId: id,
         userId: auth.user.id,
       })
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async joinPrivateLeague({ request, response, auth }: HttpContextContract) {
+    const payload = await request.validate(JoinLeagueValidator)
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+
+      if (!payload.code) throw new BadRequestException('Code not provided')
+      const resp = await LeagueService.joinPrivateLeague({
+        userId: auth.user.id,
+        code: payload.code,
+      })
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async topLeagues({ auth, response }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const resp = await LeagueService.getTopLeagues()
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async teamRank({ auth, response, request }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const { id, teamId } = request.params()
+      if (!id || !teamId) throw new BadRequestException('Id not provided')
+      const resp = await LeagueService.getTeamRank(id, teamId)
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async history({ auth, response }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const resp = await LeagueService.getLeagueHistory()
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async table({ auth, response, request }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const { id } = request.params()
+      if (!id) throw new BadRequestException('Id not provided')
+      const resp = await LeagueService.getLeagueTable(id)
       return HttpResponse({
         response,
         code: 200,

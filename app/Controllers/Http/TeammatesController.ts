@@ -1,5 +1,6 @@
 import type { HttpContextContract } from '@ioc:Adonis/Core/HttpContext'
 import ForbiddenException from 'App/Exceptions/ForbiddenException'
+import { TeamService } from 'App/Service/TeamService'
 import { TeammateService } from 'App/Service/TeammateService'
 import { HttpResponse } from 'App/Utils/ResponseUtil'
 import {
@@ -61,6 +62,21 @@ export default class TeammatesController {
     try {
       if (!auth.user) throw new ForbiddenException('You can not perform this action')
       const resp = await TeammateService.getMyTeammates(auth.user.id)
+      return HttpResponse({
+        response,
+        code: 200,
+        message: resp.message,
+        data: resp.data,
+      })
+    } catch (error) {
+      throw error
+    }
+  }
+
+  public async topTeams({ auth, response }: HttpContextContract) {
+    try {
+      if (!auth.user) throw new ForbiddenException('You can not perform this action')
+      const resp = await TeamService.getTopTeams()
       return HttpResponse({
         response,
         code: 200,

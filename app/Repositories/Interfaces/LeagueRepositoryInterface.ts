@@ -16,5 +16,6 @@ export default interface LeagueRepositoryInterface {
   getMyLeagues(userId: string): Promise<League[]>
   getByLeagueType(type: LeagueType): Promise<League[]>
   joinLeague(payload: JoinLeagueInterface): Promise<TeamLeague>
+  joinPrivateLeague(code: string, teamId: string): Promise<TeamLeague>
   verifyPrivateLeagueCode(leagueId: string, code: string): Promise<boolean>
 }

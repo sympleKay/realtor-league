@@ -35,6 +35,42 @@ export default class Realtor extends AppBaseModel {
   @column()
   public listed: number
 
+  @column()
+  public sellerAgentName: string
+
+  @column()
+  public buyerAgentName: string
+
+  @column()
+  public dualAgent: string
+
+  @column()
+  public bedroom: number
+
+  @column()
+  public bathroom: number
+
+  @column()
+  public squareFt: number
+
+  @column()
+  public lotSquareFt: number
+
+  @column()
+  public dom: number
+
+  @column()
+  public soldAbove: number
+
+  @column()
+  public soldBelow: number
+
+  @column()
+  public listPrice: number
+
+  @column()
+  public soldPrice: number
+
   @column.dateTime({ autoCreate: true, serializeAs: null })
   public createdAt: DateTime
 

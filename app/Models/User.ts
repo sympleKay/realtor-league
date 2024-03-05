@@ -40,6 +40,9 @@ export default class User extends AppBaseModel {
   public profession: string
 
   @column()
+  public balance: number
+
+  @column()
   public type: UserType
 
   @column({ serializeAs: null })
