@@ -79,7 +79,14 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
 
   public async getMyLeagues(userId: string): Promise<League[]> {
     try {
-      const leagues = await League.query().where('created_by', userId)
+      const leagues = await League.query()
+        .where('created_by', userId)
+        .preload('creator', (query) => {
+          query.select(['id', 'first_name', 'last_name'])
+        })
+        .preload('leagueWinner', (query) => {
+          query.select('id', 'name')
+        })
       return leagues
     } catch (error) {
       throw error
@@ -89,6 +96,12 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
   public async getAllLeagues(): Promise<League[]> {
     try {
       const leagues = await League.query()
+        .preload('creator', (query) => {
+          query.select(['id', 'first_name', 'last_name'])
+        })
+        .preload('leagueWinner', (query) => {
+          query.select('id', 'name')
+        })
       return leagues
     } catch (error) {
       throw error
@@ -97,7 +110,14 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
 
   public async getByLeagueType(type: LeagueType): Promise<League[]> {
     try {
-      const leagues = await League.query().where('type', type)
+      const leagues = await League.query()
+        .where('type', type)
+        .preload('creator', (query) => {
+          query.select(['id', 'first_name', 'last_name'])
+        })
+        .preload('leagueWinner', (query) => {
+          query.select('id', 'name')
+        })
       return leagues
     } catch (error) {
       throw error
@@ -105,7 +125,16 @@ export default class LeagueRepositoryDataModel implements LeagueRepositoryInterf
   }
   public async get(id: string): Promise<League> {
     try {
-      const league = await League.query().where('id', id).preload('teams').first()
+      const league = await League.query()
+        .where('id', id)
+        .preload('creator', (query) => {
+          query.select(['id', 'first_name', 'last_name'])
+        })
+        .preload('leagueWinner', (query) => {
+          query.select('id', 'name')
+        })
+        .preload('teams')
+        .first()
       if (!league) throw new NotFoundException('Invalid league id provided')
       return league
     } catch (error) {

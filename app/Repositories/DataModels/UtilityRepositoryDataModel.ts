@@ -101,6 +101,12 @@ export default class UtilityRepositoryDataModel implements UtilityRepositoryInte
             })
           })
         })
+        .preload('creator', (query) => {
+          query.select(['id', 'first_name', 'last_name'])
+        })
+        .preload('leagueWinner', (query) => {
+          query.select('id', 'name')
+        })
         .first()
       if (!league) throw new NotFoundException('League not found')
       return league
