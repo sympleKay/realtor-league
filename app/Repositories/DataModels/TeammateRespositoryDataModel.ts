@@ -110,7 +110,13 @@ export default class TeammateRespositoryDataModel implements TeammateRepositoryI
 
   public async getMyTeammates(userId: string): Promise<Team> {
     try {
-      const team = await Team.query().where('user_id', userId).preload('teammates').first()
+      const team = await Team.query()
+        .where('user_id', userId)
+        .preload('teammates', (query) => {
+          query.preload('realtor')
+          query.preload('team')
+        })
+        .first()
       if (!team) throw new NotFoundException('No team record found for user')
       return team
     } catch (error) {
